@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+macos-unifiedlogs = {git = "https://github.com/mandiant/macos-UnifiedLogs"}
+clap = { version = "4.*", features = ["derive"]}
+csv = "1.*"
+chrono = "0.4.*"
