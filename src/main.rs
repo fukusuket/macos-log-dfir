@@ -10,9 +10,9 @@ fn main() {
     match cli.action {
         Action::CsvTimeline(opt) => {
             if opt.live_analysis {
-                parse_live_system(opt.output)
+                parse_live_system(opt.output, opt.filter)
             } else {
-                parse_log_archive(opt.filepath.unwrap(), opt.output)
+                parse_log_archive(opt.filepath.unwrap(), opt.output, opt.filter)
             }
         }
     }

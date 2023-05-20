@@ -9,10 +9,10 @@ pub struct AppArg {
 
 #[derive(Clone, Debug, ValueEnum)]
 pub enum LogFilter {
-    FileDownload,
-    Persistence,
-    ProgExec,
-    VolumeMount,
+    LOGON,
+    SUDO,
+    SSH,
+    ALL,
 }
 
 #[derive(Args, Clone, Debug)]
