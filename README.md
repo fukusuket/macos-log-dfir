@@ -24,4 +24,4 @@ Output:
 - [jamf/jamfprotect](https://github.com/jamf/jamfprotect/tree/main/unified_log_filters)
 
 ## License
-- TODO
+macos-log-dfir is released under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
