@@ -1,5 +1,3 @@
-extern crate yaml_rust;
-
 use std::fs;
 use std::path::Path;
 use yaml_rust::{Yaml, YamlLoader};
