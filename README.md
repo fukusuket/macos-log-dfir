@@ -20,7 +20,6 @@ Output:
 ```
 
 ## Acknowledgements
-TODO
 - [mandiant/macos-UnifiedLogs](https://github.com/mandiant/macos-UnifiedLogs)
 
 ## License
