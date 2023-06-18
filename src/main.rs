@@ -7,6 +7,7 @@ use std::ptr::null_mut;
 
 mod args;
 mod parser;
+mod output;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -14,7 +15,7 @@ static GLOBAL: MiMalloc = MiMalloc;
 fn main() {
     let cli = AppArg::parse();
     match cli.action {
-        Action::Timeline(opt) => {
+        Action::CsvTimeline(opt) => {
             if opt.live_analysis {
                 parse_live_system(opt.output)
             } else {
@@ -28,5 +29,13 @@ fn main() {
         unsafe {
             mi_stats_print_out(None, null_mut());
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
     }
 }

@@ -80,160 +80,35 @@ fn parse_trace_file(
 
     // Exclude missing data from returned output. Keep separate until we parse all oversize entries.
     // Then at end, go through all missing data and check all parsed oversize entries again
-    let mut exclude_missing = true;
+    let archive_path = path;
+    let archive_paths = vec![
+        archive_path.join("Persist"),
+        archive_path.join("Special"),
+        archive_path.join("Signpost"),
+        archive_path.join("HighVolume"),
+    ];
+
     let mut missing_data: Vec<UnifiedLogData> = Vec::new();
-
-    let mut archive_path = path;
-    archive_path.push("Persist");
-
     let mut log_count = 0;
-    if archive_path.exists() {
-        let paths = fs::read_dir(&archive_path).unwrap();
-
-        // Loop through all tracev3 files in Persist directory
-        for log_path in paths {
-            let data = log_path.unwrap();
-            let full_path = data.path().display().to_string();
-            println!("Parsing: {}", full_path);
-
-            let log_data = if data.path().exists() {
-                parse_log(&full_path).unwrap()
-            } else {
-                println!("File {} no longer on disk", full_path);
-                continue;
-            };
-
-            // Get all constructed logs and any log data that failed to get constrcuted (exclude_missing = true)
-            let (results, missing_logs) = build_log(
-                &log_data,
-                string_results,
-                shared_strings_results,
-                timesync_data,
-                exclude_missing,
-            );
-            // Track Oversize entries
-            oversize_strings
-                .oversize
-                .append(&mut log_data.oversize.to_owned());
-
-            // Track missing logs
-            missing_data.push(missing_logs);
-            log_count += results.len();
-            output(&results, &out).unwrap();
+    for path in archive_paths {
+        if !path.exists() {
+            continue;
         }
+        dump_logs(
+            string_results,
+            shared_strings_results,
+            timesync_data,
+            &path,
+            &out,
+            &mut oversize_strings,
+            true,
+            &mut missing_data,
+            &mut log_count,
+        )
     }
-
-    archive_path.pop();
-    archive_path.push("Special");
-
-    if archive_path.exists() {
-        let paths = fs::read_dir(&archive_path).unwrap();
-
-        // Loop through all tracev3 files in Special directory
-        for log_path in paths {
-            let data = log_path.unwrap();
-            let full_path = data.path().display().to_string();
-            println!("Parsing: {}", full_path);
-
-            let mut log_data = if data.path().exists() {
-                parse_log(&full_path).unwrap()
-            } else {
-                println!("File {} no longer on disk", full_path);
-                continue;
-            };
-
-            // Append our old Oversize entries in case these logs point to other Oversize entries the previous tracev3 files
-            log_data.oversize.append(&mut oversize_strings.oversize);
-            let (results, missing_logs) = build_log(
-                &log_data,
-                string_results,
-                shared_strings_results,
-                timesync_data,
-                exclude_missing,
-            );
-            // Track Oversize entries
-            oversize_strings.oversize = log_data.oversize;
-            // Track missing logs
-            missing_data.push(missing_logs);
-            log_count += results.len();
-
-            output(&results, &out).unwrap();
-        }
-    }
-
-    archive_path.pop();
-    archive_path.push("Signpost");
-
-    if archive_path.exists() {
-        let paths = fs::read_dir(&archive_path).unwrap();
-
-        // Loop through all tracev3 files in Signpost directory
-        for log_path in paths {
-            let data = log_path.unwrap();
-            let full_path = data.path().display().to_string();
-            println!("Parsing: {}", full_path);
-
-            let log_data = if data.path().exists() {
-                parse_log(&full_path).unwrap()
-            } else {
-                println!("File {} no longer on disk", full_path);
-                continue;
-            };
-
-            let (results, missing_logs) = build_log(
-                &log_data,
-                string_results,
-                shared_strings_results,
-                timesync_data,
-                exclude_missing,
-            );
-
-            // Signposts have not been seen with Oversize entries
-            missing_data.push(missing_logs);
-            log_count += results.len();
-
-            output(&results, &out).unwrap();
-        }
-    }
-    archive_path.pop();
-    archive_path.push("HighVolume");
-
-    if archive_path.exists() {
-        let paths = fs::read_dir(&archive_path).unwrap();
-
-        // Loop through all tracev3 files in HighVolume directory
-        for log_path in paths {
-            let data = log_path.unwrap();
-            let full_path = data.path().display().to_string();
-            println!("Parsing: {}", full_path);
-
-            let log_data = if data.path().exists() {
-                parse_log(&full_path).unwrap()
-            } else {
-                println!("File {} no longer on disk", full_path);
-                continue;
-            };
-            let (results, missing_logs) = build_log(
-                &log_data,
-                string_results,
-                shared_strings_results,
-                timesync_data,
-                exclude_missing,
-            );
-
-            // Oversize entries have not been seen in logs in HighVolume
-            missing_data.push(missing_logs);
-            log_count += results.len();
-
-            output(&results, &out).unwrap();
-        }
-    }
-    archive_path.pop();
-
-    archive_path.push("logdata.LiveData.tracev3");
 
     // Check if livedata exists. We only have it if 'log collect' was used
-    if archive_path.exists() {
+    if archive_path.join("logdata.LiveData.tracev3").exists() {
         println!("Parsing: logdata.LiveData.tracev3");
         let mut log_data = parse_log(&archive_path.display().to_string()).unwrap();
         log_data.oversize.append(&mut oversize_strings.oversize);
@@ -242,7 +117,7 @@ fn parse_trace_file(
             string_results,
             shared_strings_results,
             timesync_data,
-            exclude_missing,
+            true,
         );
         // Track missing data
         missing_data.push(missing_logs);
@@ -251,10 +126,7 @@ fn parse_trace_file(
         output(&results, &out).unwrap();
         // Track oversize entries
         oversize_strings.oversize = log_data.oversize;
-        archive_path.pop();
     }
-
-    exclude_missing = false;
 
     // Since we have all Oversize entries now. Go through any log entries that we were not able to build before
     for mut leftover_data in missing_data {
@@ -271,7 +143,7 @@ fn parse_trace_file(
             string_results,
             shared_strings_results,
             timesync_data,
-            exclude_missing,
+            false,
         );
         log_count += results.len();
 
@@ -306,4 +178,59 @@ fn output(results: &Vec<LogData>, out: &PathBuf) -> Result<(), Box<dyn Error>> {
         ])?;
     }
     Ok(())
+}
+
+fn dump_logs(
+    string_results: &[UUIDText],
+    shared_strings_results: &[SharedCacheStrings],
+    timesync_data: &[TimesyncBoot],
+    archive_path: &PathBuf,
+    out: &PathBuf,
+    oversize_strings: &mut UnifiedLogData,
+    exclude_missing: bool,
+    missing_data: &mut Vec<UnifiedLogData>,
+    log_count: &mut usize,
+) {
+    let paths = fs::read_dir(archive_path).unwrap();
+
+    // Loop through all tracev3 files in Persist directory
+    for log_path in paths {
+        let data = log_path.unwrap();
+        let full_path = data.path().display().to_string();
+        println!("Parsing: {}", full_path);
+
+        let mut log_data = if data.path().exists() {
+            parse_log(&full_path).unwrap()
+        } else {
+            println!("File {} no longer on disk", full_path);
+            continue;
+        };
+
+        // Get all constructed logs and any log data that failed to get constrcuted (exclude_missing = true)
+        log_data.oversize.append(&mut oversize_strings.oversize);
+        let (results, missing_logs) = build_log(
+            &log_data,
+            string_results,
+            shared_strings_results,
+            timesync_data,
+            exclude_missing,
+        );
+        // Track Oversize entries
+        oversize_strings
+            .oversize
+            .append(&mut log_data.oversize.to_owned());
+
+        // Track missing logs
+        missing_data.push(missing_logs);
+        *log_count += results.len();
+        output(&results, out).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
 }
