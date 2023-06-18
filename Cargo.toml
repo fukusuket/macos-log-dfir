@@ -10,3 +10,5 @@ macos-unifiedlogs = {git = "https://github.com/mandiant/macos-UnifiedLogs"}
 clap = { version = "4.*", features = ["derive"]}
 csv = "1.*"
 chrono = "0.4.*"
+mimalloc = { version = "*", default-features = false }
+libmimalloc-sys = { version = "*",  features = ["extended"] }

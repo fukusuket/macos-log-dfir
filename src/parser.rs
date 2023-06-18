@@ -11,11 +11,9 @@ use std::error::Error;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use crate::args::LogFilter;
-
 
 // Parse a provided directory path. Currently expect the path to follow macOS log collect structure
-pub fn parse_log_archive(path: PathBuf, out: PathBuf, filter: LogFilter) {
+pub fn parse_log_archive(path: PathBuf, out: PathBuf) {
     let mut archive_path = path.clone();
 
     // Parse all UUID files which contain strings and other metadata
@@ -40,14 +38,13 @@ pub fn parse_log_archive(path: PathBuf, out: PathBuf, filter: LogFilter) {
         &timesync_data,
         path,
         out,
-        filter,
     );
 
     println!("\nFinished parsing Unified Log data. Saved results to: output.csv");
 }
 
 // Parse a live macOS system
-pub fn parse_live_system(out: PathBuf, filter: LogFilter) {
+pub fn parse_live_system(out: PathBuf) {
     let strings = collect_strings_system().unwrap();
     let shared_strings = collect_shared_strings_system().unwrap();
     let timesync_data = collect_timesync_system().unwrap();
@@ -58,7 +55,6 @@ pub fn parse_live_system(out: PathBuf, filter: LogFilter) {
         &timesync_data,
         PathBuf::from("/private/var/db/diagnostics"),
         out,
-        filter,
     );
 
     println!("\nFinished parsing Unified Log data. Saved results to: output.csv");
@@ -72,7 +68,6 @@ fn parse_trace_file(
     timesync_data: &[TimesyncBoot],
     path: PathBuf,
     out: PathBuf,
-    filter: LogFilter,
 ) {
     // We need to persist the Oversize log entries (they contain large strings that don't fit in normal log entries)
     // Some log entries have Oversize strings located in different tracev3 files.
@@ -124,7 +119,7 @@ fn parse_trace_file(
             // Track missing logs
             missing_data.push(missing_logs);
             log_count += results.len();
-            output(&results, &out, &filter).unwrap();
+            output(&results, &out).unwrap();
         }
     }
 
@@ -162,7 +157,7 @@ fn parse_trace_file(
             missing_data.push(missing_logs);
             log_count += results.len();
 
-            output(&results, &out, &filter).unwrap();
+            output(&results, &out).unwrap();
         }
     }
 
@@ -197,7 +192,7 @@ fn parse_trace_file(
             missing_data.push(missing_logs);
             log_count += results.len();
 
-            output(&results, &out, &filter).unwrap();
+            output(&results, &out).unwrap();
         }
     }
     archive_path.pop();
@@ -230,7 +225,7 @@ fn parse_trace_file(
             missing_data.push(missing_logs);
             log_count += results.len();
 
-            output(&results, &out, &filter).unwrap();
+            output(&results, &out).unwrap();
         }
     }
     archive_path.pop();
@@ -253,7 +248,7 @@ fn parse_trace_file(
         missing_data.push(missing_logs);
         log_count += results.len();
 
-        output(&results, &out, &filter).unwrap();
+        output(&results, &out).unwrap();
         // Track oversize entries
         oversize_strings.oversize = log_data.oversize;
         archive_path.pop();
@@ -280,28 +275,16 @@ fn parse_trace_file(
         );
         log_count += results.len();
 
-        output(&results, &out, &filter).unwrap();
+        output(&results, &out).unwrap();
     }
     println!("Parsed {} log entries", log_count);
 }
 
-fn output(results: &Vec<LogData>, out: &PathBuf, filter: &LogFilter) -> Result<(), Box<dyn Error>> {
+fn output(results: &Vec<LogData>, out: &PathBuf) -> Result<(), Box<dyn Error>> {
     let csv_file = OpenOptions::new().append(true).create(true).open(out)?;
     let mut writer = csv::Writer::from_writer(csv_file);
-    let filter_str = match filter {
-        LogFilter::LOGON => |l: &LogData| l.process.to_string().ends_with("logind"),
-        LogFilter::SUDO =>  |l: &LogData| l.process.to_string().ends_with("sudo"),
-        LogFilter::SSH => |l: &LogData| l.process.to_string().ends_with("ssh"),
-        LogFilter::ALL => |l: &LogData| {
-            let s = l.process.to_string();
-            s.ends_with("logind") || s.ends_with("sudo")  || s.ends_with("ssh")
-        }
-    };
     for data in results {
         let date_time = Utc.timestamp_nanos(data.time as i64);
-        if !filter_str(data) {
-            continue;
-        }
         writer.write_record(&[
             date_time.to_rfc3339_opts(SecondsFormat::Millis, true),
             data.event_type.to_owned(),

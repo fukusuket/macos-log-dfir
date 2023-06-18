@@ -1,38 +1,32 @@
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{Args, Parser, Subcommand};
 use std::path::PathBuf;
 
 #[derive(Parser)]
+#[command(version, about, long_about = None)]
 pub struct AppArg {
     #[clap(subcommand)]
     pub action: Action,
-}
 
-#[derive(Clone, Debug, ValueEnum)]
-pub enum LogFilter {
-    LOGON,
-    SUDO,
-    SSH,
-    ALL,
+    /// Print debug information (memory usage, etc...)
+    #[clap(long = "debug", global = true, hide = true)]
+    pub debug: bool,
 }
 
 #[derive(Args, Clone, Debug)]
-pub struct CsvTimelineOption {
-    /// File path to one file
-    #[arg(help_heading = Some("Input"), short = 'f', long = "file", value_name = "FILE", conflicts_with_all = ["live_analysis"])]
-    pub filepath: Option<PathBuf>,
+pub struct TimelineOption {
+    /// Path to logarchive formatted directory
+    #[arg(help_heading = Some("Input"), short = 'a', long = "archive_dir", value_name = "ARCHIVE", conflicts_with_all = ["live_analysis"])]
+    pub archive_dir: Option<PathBuf>,
 
-    /// Analyze the local Logs folder
-    #[arg(help_heading = Some("Input"), short = 'l', long = "live_analysis", conflicts_with_all = ["filepath"])]
+    /// Run on live system
+    #[arg(help_heading = Some("Input"), short = 'l', long = "live_analysis", conflicts_with_all = ["archive_dir"])]
     pub live_analysis: bool,
 
-    #[arg(value_enum, help_heading = Some("Filter"), short = 'f', long, value_name = "FILTER")]
-    pub filter: LogFilter,
-
-    #[arg(help_heading = Some("Output"), short = 'o', long, value_name = "FILE")]
+    #[arg(help_heading = Some("Output"), short = 'o', long, value_name = "OUTPUT")]
     pub output: PathBuf,
 }
 
 #[derive(Subcommand)]
 pub enum Action {
-    CsvTimeline(CsvTimelineOption),
+    Timeline(TimelineOption),
 }
