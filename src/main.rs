@@ -8,6 +8,7 @@ use std::ptr::null_mut;
 mod args;
 mod parser;
 mod output;
+mod yml;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;

@@ -18,5 +18,5 @@ serde_json = { version = "1.0"}
 downcast-rs = "1.*"
 lazy_static = "1.4.*"
 regex = "1"
-yaml-rust = "0.4.*"
 nested="*"
+yaml-rust = "0.4.*"

@@ -17,7 +17,6 @@ pub struct CsvTimelineOption {
     /// Path to logarchive formatted directory
     #[arg(help_heading = Some("Input"), short = 'a', long = "archive_dir", value_name = "ARCHIVE", conflicts_with_all = ["live_analysis"])]
     pub archive_dir: Option<PathBuf>,
-
     /// Run on live system
     #[arg(help_heading = Some("Input"), short = 'l', long = "live_analysis", conflicts_with_all = ["archive_dir"])]
     pub live_analysis: bool,
