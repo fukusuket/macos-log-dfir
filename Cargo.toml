@@ -12,3 +12,11 @@ csv = "1.*"
 chrono = "0.4.*"
 mimalloc = { version = "*", default-features = false }
 libmimalloc-sys = { version = "*",  features = ["extended"] }
+hashbrown = "0.14.*"
+itertools = "*"
+serde_json = { version = "1.0"}
+downcast-rs = "1.*"
+lazy_static = "1.4.*"
+regex = "1"
+yaml-rust = "0.4.*"
+nested="*"
