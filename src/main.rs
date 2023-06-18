@@ -9,6 +9,12 @@ mod args;
 mod parser;
 mod output;
 mod yml;
+mod filter;
+mod rule {
+    pub mod condition_parser;
+    pub mod selectionnodes;
+}
+
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
