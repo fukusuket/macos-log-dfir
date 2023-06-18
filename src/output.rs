@@ -1,8 +1,8 @@
+use chrono::{SecondsFormat, TimeZone, Utc};
+use macos_unifiedlogs::unified_log::LogData;
 use std::error::Error;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use chrono::{SecondsFormat, TimeZone, Utc};
-use macos_unifiedlogs::unified_log::LogData;
 
 pub fn output(results: &Vec<LogData>, out: &PathBuf) -> Result<(), Box<dyn Error>> {
     let csv_file = OpenOptions::new().append(true).create(true).open(out)?;

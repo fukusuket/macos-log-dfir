@@ -21,6 +21,7 @@ Output:
 
 ## Acknowledgements
 - [mandiant/macos-UnifiedLogs](https://github.com/mandiant/macos-UnifiedLogs)
+- [jamf/jamfprotect](https://github.com/jamf/jamfprotect/tree/main/unified_log_filters)
 
 ## License
 - TODO

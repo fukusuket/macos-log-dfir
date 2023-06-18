@@ -1,6 +1,4 @@
-fn filter() {
-
-}
+fn filter() {}
 
 #[cfg(test)]
 mod tests {

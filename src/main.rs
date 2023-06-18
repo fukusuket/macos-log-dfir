@@ -6,15 +6,14 @@ use parser::{parse_live_system, parse_log_archive};
 use std::ptr::null_mut;
 
 mod args;
-mod parser;
-mod output;
-mod yml;
 mod filter;
+mod output;
+mod parser;
+mod yml;
 mod rule {
     pub mod condition_parser;
     pub mod selectionnodes;
 }
-
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;

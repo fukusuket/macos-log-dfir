@@ -1,0 +1,31 @@
+author: 'Fukusuke Takahashi'
+date: 2023/06/19
+modified: 2023/06/19
+
+title: 'login_through_login_window_with_touch_id_success'
+details: 'TODO'
+description: 'TODO'
+
+id: c4839192-3d1b-40d2-bc4c-6a09ac7b9091
+level: informational
+status: experimental
+logsource:
+  product: macos
+detection:
+  selection:
+    process:"TODO"
+  condition: selection
+falsepositives:
+  - unknown
+references:
+  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+ruletype: Hayabusa
+
+## login_through_login_window_with_touch_id_success
+##
+## This Unified Log filter may be used to report on a successful login with TouchID at the macOS login window.
+## This filter functions by monitoring logging from loginwindow process where the event messaging contains a known string indicating a successful login with TouchID.
+##
+## Filter Predicate:
+#
+#process == "loginwindow" AND eventMessage CONTAINS[c] "APEventTouchIDMatch"

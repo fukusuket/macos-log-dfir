@@ -1,3 +1,4 @@
+use crate::output::output;
 use macos_unifiedlogs::dsc::SharedCacheStrings;
 use macos_unifiedlogs::parser::{
     build_log, collect_shared_strings, collect_shared_strings_system, collect_strings,
@@ -8,7 +9,6 @@ use macos_unifiedlogs::unified_log::UnifiedLogData;
 use macos_unifiedlogs::uuidtext::UUIDText;
 use std::fs;
 use std::path::PathBuf;
-use crate::output::output;
 
 // Parse a provided directory path. Currently expect the path to follow macOS log collect structure
 pub fn parse_log_archive(path: PathBuf, out: PathBuf) {
@@ -17,16 +17,13 @@ pub fn parse_log_archive(path: PathBuf, out: PathBuf) {
     // Parse all UUID files which contain strings and other metadata
     let string_results = collect_strings(&archive_path.display().to_string()).unwrap();
 
-    archive_path.push("dsc");
     // Parse UUID cache files which also contain strings and other metadata
     let shared_strings_results =
-        collect_shared_strings(&archive_path.display().to_string()).unwrap();
-    archive_path.pop();
+        collect_shared_strings(&archive_path.join("dsc").display().to_string()).unwrap();
 
-    archive_path.push("timesync");
     // Parse all timesync files
-    let timesync_data = collect_timesync(&archive_path.display().to_string()).unwrap();
-    archive_path.pop();
+    let timesync_data =
+        collect_timesync(&archive_path.join("timesync").display().to_string()).unwrap();
 
     // Keep UUID, UUID cache, timesync files in memory while we parse all tracev3 files
     // Allows for faster lookups
@@ -149,7 +146,6 @@ fn parse_trace_file(
     }
     println!("Parsed {} log entries", log_count);
 }
-
 
 fn dump_logs(
     string_results: &[UUIDText],

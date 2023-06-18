@@ -1,0 +1,31 @@
+author: 'Fukusuke Takahashi'
+date: 2023/06/19
+modified: 2023/06/19
+
+title: 'login_through_login_window_with_apple_watch_success'
+details: 'TODO'
+description: 'TODO'
+
+id: 503160dc-97c9-4506-b0ab-fd4434c134ce
+level: informational
+status: experimental
+logsource:
+  product: macos
+detection:
+  selection:
+    process:"TODO"
+  condition: selection
+falsepositives:
+  - unknown
+references:
+  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+ruletype: Hayabusa
+
+## login_through_login_window_with_apple_watch_success
+##
+## This Unified Log filter may be used to report on a successful login with Apple Watch at the macOS login window.
+## This filter functions by monitoring logging from loginwindow process where the event messaging contains a known string indicating a successful login with Apple Watch.
+##
+## Filter Predicate:
+#
+#processImagePath ENDSWITH[c] "loginwindow" and eventMessage contains[c] "LWScreenLockAuthentication" and eventMessage contains[c] "screensaver_aks"
