@@ -33,3 +33,4 @@ ruletype: Hayabusa
 ## Filter Predicate:
 #
 #processImagePath ENDSWITH[c] "loginwindow" and eventMessage contains[c] "LWScreenLockAuthentication" and eventMessage contains[c] "screensaver_aks"
+## Copyright (c) 2022, Jamf Software, LLC. All rights reserved.

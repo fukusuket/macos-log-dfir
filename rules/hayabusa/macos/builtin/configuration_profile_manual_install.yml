@@ -26,3 +26,5 @@ falsepositives:
 references:
     - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
+
+## Copyright (c) 2022, Jamf Software, LLC. All rights reserved.

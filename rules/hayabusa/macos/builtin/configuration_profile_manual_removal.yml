@@ -40,3 +40,4 @@ ruletype: Hayabusa
 ## Example output for a computer-level configuration profile
 #
 #2021-XX-XX XX:XX:51.732257+0100 XXXXXXX    Default     XXXXXXX              XXXX   0    mdmclient: [com.apple.ManagedClient:MDMDaemon] Removed configuration profile: Display Name Of Configuration Profile Installed (profile-identifier-here:profile-payload-UUID-here) for <Computer> (Source: Manual)
+# Copyright (c) 2022, Jamf Software, LLC. All rights reserved.

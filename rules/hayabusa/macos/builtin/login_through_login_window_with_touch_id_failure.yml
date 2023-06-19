@@ -32,3 +32,4 @@ ruletype: Hayabusa
 ## Filter Predicate:
 #
 #process == "loginwindow" AND eventMessage CONTAINS[c] "APEventTouchIDNoMatch"
+## Copyright (c) 2022, Jamf Software, LLC. All rights reserved.

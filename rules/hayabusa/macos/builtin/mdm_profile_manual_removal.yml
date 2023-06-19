@@ -32,3 +32,4 @@ ruletype: Hayabusa
 ## Filter Predicate:
 #
 #subsystem == "com.apple.ManagedClient" AND eventMessage CONTAINS "Removed configuration profile: MDM Profile" AND eventMessage CONTAINS "Source: Manual"
+## Copyright (c) 2022, Jamf Software, LLC. All rights reserved.

@@ -43,3 +43,4 @@ ruletype: Hayabusa
 #
 #2022-09-02 14:23:01.163871+0200 0x131146   Default     0x0                  764    0    nesessionmanager: [com.apple.networkextension:] NESMDNSSettingsSession[DNS Settings:1FEB95F4-5499-4BAA-AE37-9C8994F91C6D]: status changed to disconnected, last stop reason Configuration was disabled
 #
+## Copyright (c) 2022, Jamf Software, LLC. All rights reserved.
