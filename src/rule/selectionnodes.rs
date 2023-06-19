@@ -1,8 +1,10 @@
+use crate::rule::matchers::DefaultMatcher;
 use downcast_rs::Downcast;
 use macos_unifiedlogs::unified_log::LogData;
 use nested::Nested;
 use std::{sync::Arc, vec};
 use yaml_rust::Yaml;
+use crate::rule::matchers;
 
 // Ruleファイルの detection- selection配下のノードはこのtraitを実装する。
 pub trait SelectionNode: Downcast {
@@ -301,6 +303,7 @@ pub struct LeafSelectionNode {
     key: String,
     key_list: Nested<String>,
     select_value: Yaml,
+    pub matcher: Option<Box<dyn matchers::LeafMatcher>>,
 }
 
 impl LeafSelectionNode {
@@ -309,7 +312,29 @@ impl LeafSelectionNode {
             key: String::default(),
             key_list: keys,
             select_value: value_yaml,
+            matcher: None,
         }
+    }
+
+    pub fn get_key(&self) -> &String {
+        &self.key
+    }
+
+    pub fn get_keys(&self) -> Vec<&String> {
+        let mut keys = vec![];
+        if !self.key.is_empty() {
+            keys.push(&self.key);
+        }
+        keys
+    }
+
+    fn _create_key(&self) -> String {
+        if self.key_list.is_empty() {
+            return String::default();
+        }
+
+        let topkey = &self.key_list[0];
+        topkey.split('|').next().unwrap_or_default().to_string()
     }
 }
 
