@@ -22,6 +22,7 @@ Output:
 ## Acknowledgements
 - [mandiant/macos-UnifiedLogs](https://github.com/mandiant/macos-UnifiedLogs)
 - [jamf/jamfprotect](https://github.com/jamf/jamfprotect/tree/main/unified_log_filters)
+- [libyal/dtformats](https://github.com/libyal/dtformats/blob/main/documentation/Apple%20Unified%20Logging%20and%20Activity%20Tracing%20formats.asciidoc)
 
 ## License
 macos-log-dfir is released under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).

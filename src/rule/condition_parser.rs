@@ -332,9 +332,7 @@ impl ConditionCompiler {
         for (i, token) in tokens.into_iter().enumerate() {
             if (i % 2 == 1) != self.is_logical(&token) {
                 // インデックスが奇数の時はLogicalOperatorで、インデックスが偶数のときはOperandContainerになる
-                return Err(
-                    "The use of a logical operator(and, or) was wrong.".to_string(),
-                );
+                return Err("The use of a logical operator(and, or) was wrong.".to_string());
             }
 
             if i % 2 == 0 {
