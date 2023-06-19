@@ -15,6 +15,7 @@ mod parser;
 mod yml;
 mod rule {
     pub mod condition_parser;
+    pub mod matchers;
     pub mod rulenode;
     pub mod selectionnodes;
 }

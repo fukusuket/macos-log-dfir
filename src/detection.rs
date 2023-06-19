@@ -1,5 +1,5 @@
-use macos_unifiedlogs::unified_log::LogData;
 use crate::RuleNode;
+use macos_unifiedlogs::unified_log::LogData;
 
 #[derive(Debug)]
 pub struct DetectInfo {
@@ -10,7 +10,6 @@ pub struct DetectInfo {
 }
 
 pub fn detect(results: &Vec<LogData>, rulenode: &Vec<RuleNode>) -> Vec<DetectInfo> {
-
     vec![]
 }
 

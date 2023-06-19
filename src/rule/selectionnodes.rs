@@ -1,7 +1,7 @@
 use downcast_rs::Downcast;
+use macos_unifiedlogs::unified_log::LogData;
 use nested::Nested;
 use std::{sync::Arc, vec};
-use macos_unifiedlogs::unified_log::LogData;
 use yaml_rust::Yaml;
 
 // Ruleファイルの detection- selection配下のノードはこのtraitを実装する。

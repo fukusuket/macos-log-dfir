@@ -1,10 +1,10 @@
 use crate::rule::selectionnodes::SelectionNode;
 use crate::rule::{condition_parser, selectionnodes};
 use hashbrown::HashMap;
+use macos_unifiedlogs::unified_log::LogData;
 use nested::Nested;
 use std::fmt::Debug;
 use std::sync::Arc;
-use macos_unifiedlogs::unified_log::LogData;
 use yaml_rust::Yaml;
 
 pub struct RuleNode {
