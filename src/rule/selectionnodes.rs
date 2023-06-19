@@ -1,6 +1,5 @@
 use downcast_rs::Downcast;
 use nested::Nested;
-use serde_json::Value;
 use std::{sync::Arc, vec};
 use yaml_rust::Yaml;
 
@@ -294,5 +293,39 @@ impl SelectionNode for RefSelectionNode {
 
     fn get_descendants(&self) -> Vec<&dyn SelectionNode> {
         self.get_childs()
+    }
+}
+
+pub struct LeafSelectionNode {
+    key: String,
+    key_list: Nested<String>,
+    select_value: Yaml,
+}
+
+impl LeafSelectionNode {
+    pub fn new(keys: Nested<String>, value_yaml: Yaml) -> LeafSelectionNode {
+        LeafSelectionNode {
+            key: String::default(),
+            key_list: keys,
+            select_value: value_yaml,
+        }
+    }
+}
+
+impl SelectionNode for LeafSelectionNode {
+    fn select(&self, event_record: &str) -> bool {
+        true
+    }
+
+    fn init(&mut self) -> Result<(), Vec<String>> {
+        Ok(())
+    }
+
+    fn get_childs(&self) -> Vec<&dyn SelectionNode> {
+        vec![]
+    }
+
+    fn get_descendants(&self) -> Vec<&dyn SelectionNode> {
+        vec![]
     }
 }
