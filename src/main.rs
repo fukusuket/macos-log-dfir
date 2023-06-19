@@ -9,7 +9,7 @@ use std::path::Path;
 use std::ptr::null_mut;
 
 mod args;
-mod filter;
+mod detection;
 mod output;
 mod parser;
 mod yml;

@@ -4,6 +4,7 @@ use hashbrown::HashMap;
 use nested::Nested;
 use std::fmt::Debug;
 use std::sync::Arc;
+use macos_unifiedlogs::unified_log::LogData;
 use yaml_rust::Yaml;
 
 pub struct RuleNode {
@@ -42,7 +43,7 @@ impl RuleNode {
         }
     }
 
-    pub fn select(&mut self, event_record: &str) -> bool {
+    pub fn select(&mut self, event_record: &LogData) -> bool {
         self.detection.select(event_record)
     }
 }
@@ -92,7 +93,7 @@ impl DetectionNode {
         }
     }
 
-    pub fn select(&self, event_record: &str) -> bool {
+    pub fn select(&self, event_record: &LogData) -> bool {
         if self.condition.is_none() {
             return false;
         }

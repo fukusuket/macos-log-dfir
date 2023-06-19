@@ -1,13 +1,14 @@
 use downcast_rs::Downcast;
 use nested::Nested;
 use std::{sync::Arc, vec};
+use macos_unifiedlogs::unified_log::LogData;
 use yaml_rust::Yaml;
 
 // Ruleファイルの detection- selection配下のノードはこのtraitを実装する。
 pub trait SelectionNode: Downcast {
     // 引数で指定されるイベントログのレコードが、条件に一致するかどうかを判定する
     // このトレイトを実装する構造体毎に適切な判定処理を書く必要がある。
-    fn select(&self, event_record: &str) -> bool;
+    fn select(&self, event_record: &LogData) -> bool;
 
     // 初期化処理を行う
     // 戻り値としてエラーを返却できるようになっているので、Ruleファイルが間違っていて、SelectionNodeを構成出来ない時はここでエラーを出す
@@ -37,7 +38,7 @@ impl AndSelectionNode {
 }
 
 impl SelectionNode for AndSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         self.child_nodes
             .iter()
             .all(|child_node| child_node.select(event_record))
@@ -107,7 +108,7 @@ impl AllSelectionNode {
 }
 
 impl SelectionNode for AllSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         self.child_nodes
             .iter()
             .all(|child_node| child_node.select(event_record))
@@ -177,7 +178,7 @@ impl OrSelectionNode {
 }
 
 impl SelectionNode for OrSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         self.child_nodes
             .iter()
             .any(|child_node| child_node.select(event_record))
@@ -245,7 +246,7 @@ impl NotSelectionNode {
 }
 
 impl SelectionNode for NotSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         !self.node.select(event_record)
     }
 
@@ -279,7 +280,7 @@ impl RefSelectionNode {
 }
 
 impl SelectionNode for RefSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         self.selection_node.select(event_record)
     }
 
@@ -313,7 +314,7 @@ impl LeafSelectionNode {
 }
 
 impl SelectionNode for LeafSelectionNode {
-    fn select(&self, event_record: &str) -> bool {
+    fn select(&self, event_record: &LogData) -> bool {
         true
     }
 
