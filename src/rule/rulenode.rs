@@ -17,12 +17,6 @@ struct DetectionNode {
     pub condition: Option<Box<dyn SelectionNode>>,
 }
 
-impl Debug for RuleNode {
-    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        Ok(())
-    }
-}
-
 impl RuleNode {
     pub fn new(rule_path: String, yaml_data: Yaml) -> RuleNode {
         RuleNode {
