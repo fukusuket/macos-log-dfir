@@ -43,7 +43,7 @@ pub enum ConditionToken {
 // ここを参考にしました。https://qiita.com/yasuo-ozu/items/7ce2f8ff846ba00dd244
 impl IntoIterator for ConditionToken {
     type Item = ConditionToken;
-    type IntoIter = std::vec::IntoIter<ConditionToken>;
+    type IntoIter = IntoIter<ConditionToken>;
 
     fn into_iter(self) -> Self::IntoIter {
         match self {
@@ -133,8 +133,8 @@ impl ConditionCompiler {
         };
 
         let result = self.compile_condition_body(&replaced_condition, name_2_node);
-        if let Result::Err(msg) = result {
-            Result::Err(format!("A condition parse error has occurred. {msg}"))
+        if let Err(msg) = result {
+            Err(format!("A condition parse error has occurred. {msg}"))
         } else {
             result
         }
@@ -198,12 +198,12 @@ impl ConditionCompiler {
     fn parse_rest_parenthesis(&self, token: ConditionToken) -> Result<ConditionToken, String> {
         if let ConditionToken::ParenthesisContainer(sub_token) = token {
             let new_token = self.parse(sub_token)?;
-            return Result::Ok(new_token);
+            return Ok(new_token);
         }
 
         let sub_tokens = token.sub_tokens();
         if sub_tokens.is_empty() {
-            return Result::Ok(token);
+            return Ok(token);
         }
 
         let mut new_sub_tokens = vec![];
@@ -211,7 +211,7 @@ impl ConditionCompiler {
             let new_token = self.parse_rest_parenthesis(sub_token)?;
             new_sub_tokens.push(new_token);
         }
-        Result::Ok(token.replace_subtoken(new_sub_tokens))
+        Ok(token.replace_subtoken(new_sub_tokens))
     }
 
     /// 字句解析を行う
@@ -225,7 +225,7 @@ impl ConditionCompiler {
             });
             if captured.is_none() {
                 // トークンにマッチしないのはありえないという方針でパースしています。
-                return Result::Err("An unusable character was found.".to_string());
+                return Err("An unusable character was found.".to_string());
             }
 
             let mached_str = captured.unwrap().get(0).unwrap().as_str();
@@ -240,7 +240,7 @@ impl ConditionCompiler {
             cur_condition_str = cur_condition_str.replacen(mached_str, "", 1);
         }
 
-        Result::Ok(tokens)
+        Ok(tokens)
     }
 
     /// 文字列をConditionTokenに変換する。
@@ -293,7 +293,7 @@ impl ConditionCompiler {
             }
             // 最後までついても対応する右括弧が見つからないことを表している
             if left_cnt != right_cnt {
-                return Result::Err("')' was expected but not found.".to_string());
+                return Err("')' was expected but not found.".to_string());
             }
 
             // ここで再帰的に呼び出す。
@@ -305,17 +305,17 @@ impl ConditionCompiler {
             .iter()
             .any(|token| matches!(token, ConditionToken::RightParenthesis));
         if is_right_left {
-            return Result::Err("'(' was expected but not found.".to_string());
+            return Err("'(' was expected but not found.".to_string());
         }
 
-        Result::Ok(ret)
+        Ok(ret)
     }
 
     /// AND, ORをパースする。
     fn parse_and_or_operator(&self, tokens: Vec<ConditionToken>) -> Result<ConditionToken, String> {
         if tokens.is_empty() {
             // 長さ0は呼び出してはいけない
-            return Result::Err("Unknown error.".to_string());
+            return Err("Unknown error.".to_string());
         }
 
         // まず、selection1 and not selection2みたいな式のselection1やnot selection2のように、ANDやORでつながるトークンをまとめる。
@@ -323,7 +323,7 @@ impl ConditionCompiler {
 
         // 先頭又は末尾がAND/ORなのはだめ
         if self.is_logical(&tokens[0]) || self.is_logical(&tokens[tokens.len() - 1]) {
-            return Result::Err("An illegal logical operator(and, or) was found.".to_string());
+            return Err("An illegal logical operator(and, or) was found.".to_string());
         }
 
         // OperandContainerとLogicalOperator(AndとOR)が交互に並んでいるので、それぞれリストに投入
@@ -332,7 +332,7 @@ impl ConditionCompiler {
         for (i, token) in tokens.into_iter().enumerate() {
             if (i % 2 == 1) != self.is_logical(&token) {
                 // インデックスが奇数の時はLogicalOperatorで、インデックスが偶数のときはOperandContainerになる
-                return Result::Err(
+                return Err(
                     "The use of a logical operator(and, or) was wrong.".to_string(),
                 );
             }
@@ -362,7 +362,7 @@ impl ConditionCompiler {
 
         // 次にOrでつながっている部分をまとめる
         let or_contaienr = ConditionToken::OrContainer(operands.into_iter());
-        Result::Ok(or_contaienr)
+        Ok(or_contaienr)
     }
 
     /// OperandContainerの中身をパースする。現状はNotをパースするためだけに存在している。
@@ -373,7 +373,7 @@ impl ConditionCompiler {
 
             // 上記の通り、3つ以上入っていることはないはず。
             if sub_tokens.len() >= 3 {
-                return Result::Err(
+                return Err(
                     "Unknown error. Maybe it is because there are multiple names of selection nodes."
                         .to_string(),
                 );
@@ -381,17 +381,17 @@ impl ConditionCompiler {
 
             // 0はありえないはず
             if sub_tokens.len() == 0 {
-                return Result::Err("Unknown error.".to_string());
+                return Err("Unknown error.".to_string());
             }
 
             // 1つだけ入っている場合、NOTはありえない。
             if sub_tokens.len() == 1 {
                 let operand_subtoken = sub_tokens.into_iter().next().unwrap();
                 if let ConditionToken::Not = operand_subtoken {
-                    return Result::Err("An illegal not was found.".to_string());
+                    return Err("An illegal not was found.".to_string());
                 }
 
-                return Result::Ok(operand_subtoken);
+                return Ok(operand_subtoken);
             }
 
             // ２つ入っている場合、先頭がNotで次はNotじゃない何かのはず
@@ -400,14 +400,14 @@ impl ConditionCompiler {
             let second_token = sub_tokens_ite.next().unwrap();
             if let ConditionToken::Not = first_token {
                 if let ConditionToken::Not = second_token {
-                    Result::Err("Not is continuous.".to_string())
+                    Err("Not is continuous.".to_string())
                 } else {
                     let not_container =
                         ConditionToken::NotContainer(vec![second_token].into_iter());
-                    Result::Ok(not_container)
+                    Ok(not_container)
                 }
             } else {
-                Result::Err(
+                Err(
                     "Unknown error. Maybe it is because there are multiple names of selection nodes."
                         .to_string(),
                 )
@@ -415,7 +415,7 @@ impl ConditionCompiler {
         } else {
             let sub_tokens = parent_token.sub_tokens_without_parenthesis();
             if sub_tokens.is_empty() {
-                return Result::Ok(parent_token);
+                return Ok(parent_token);
             }
 
             let mut new_sub_tokens = vec![];
@@ -424,7 +424,7 @@ impl ConditionCompiler {
                 new_sub_tokens.push(new_sub_token);
             }
 
-            Result::Ok(parent_token.replace_subtoken(new_sub_tokens))
+            Ok(parent_token.replace_subtoken(new_sub_tokens))
         }
     }
 
@@ -440,10 +440,10 @@ impl ConditionCompiler {
                 let selection_node = select_node;
                 let selection_node = Arc::clone(selection_node);
                 let ref_node = RefSelectionNode::new(selection_node);
-                return Result::Ok(Box::new(ref_node));
+                return Ok(Box::new(ref_node));
             } else {
                 let err_msg = format!("{selection_name} is not defined.");
-                return Result::Err(err_msg);
+                return Err(err_msg);
             }
         }
 
@@ -454,7 +454,7 @@ impl ConditionCompiler {
                 let sub_node = Self::to_selectnode(sub_token, name_2_node)?;
                 select_and_node.child_nodes.push(sub_node);
             }
-            return Result::Ok(Box::new(select_and_node));
+            return Ok(Box::new(select_and_node));
         }
 
         // OrSelectionNodeに変換
@@ -464,22 +464,22 @@ impl ConditionCompiler {
                 let sub_node = Self::to_selectnode(sub_token, name_2_node)?;
                 select_or_node.child_nodes.push(sub_node);
             }
-            return Result::Ok(Box::new(select_or_node));
+            return Ok(Box::new(select_or_node));
         }
 
         // NotSelectionNodeに変換
         if let ConditionToken::NotContainer(sub_tokens) = token {
             if sub_tokens.len() > 1 {
-                return Result::Err("Unknown error".to_string());
+                return Err("Unknown error".to_string());
             }
 
             let select_sub_node =
                 Self::to_selectnode(sub_tokens.into_iter().next().unwrap(), name_2_node)?;
             let select_not_node = NotSelectionNode::new(select_sub_node);
-            return Result::Ok(Box::new(select_not_node));
+            return Ok(Box::new(select_not_node));
         }
 
-        Result::Err("Unknown error".to_string())
+        Err("Unknown error".to_string())
     }
 
     /// ConditionTokenがAndまたはOrTokenならばTrue
@@ -517,6 +517,6 @@ impl ConditionCompiler {
             ));
         }
 
-        Result::Ok(ret)
+        Ok(ret)
     }
 }

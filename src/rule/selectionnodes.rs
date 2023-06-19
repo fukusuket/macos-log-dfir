@@ -65,9 +65,9 @@ impl SelectionNode for AndSelectionNode {
             );
 
         if err_msgs.is_empty() {
-            Result::Ok(())
+            Ok(())
         } else {
-            Result::Err(err_msgs)
+            Err(err_msgs)
         }
     }
 
@@ -135,9 +135,9 @@ impl SelectionNode for AllSelectionNode {
             );
 
         if err_msgs.is_empty() {
-            Result::Ok(())
+            Ok(())
         } else {
-            Result::Err(err_msgs)
+            Err(err_msgs)
         }
     }
 
@@ -205,9 +205,9 @@ impl SelectionNode for OrSelectionNode {
             );
 
         if err_msgs.is_empty() {
-            Result::Ok(())
+            Ok(())
         } else {
-            Result::Err(err_msgs)
+            Err(err_msgs)
         }
     }
 
@@ -251,7 +251,7 @@ impl SelectionNode for NotSelectionNode {
     }
 
     fn init(&mut self) -> Result<(), Vec<String>> {
-        Result::Ok(())
+        Ok(())
     }
 
     fn get_childs(&self) -> Vec<&dyn SelectionNode> {
@@ -285,7 +285,7 @@ impl SelectionNode for RefSelectionNode {
     }
 
     fn init(&mut self) -> Result<(), Vec<String>> {
-        Result::Ok(())
+        Ok(())
     }
 
     fn get_childs(&self) -> Vec<&dyn SelectionNode> {
