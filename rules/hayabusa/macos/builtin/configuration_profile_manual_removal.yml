@@ -1,24 +1,31 @@
-author: 'Fukusuke Takahashi'
+author: 'TODO'
 date: 2023/06/19
 modified: 2023/06/19
 
 title: 'configuration_profile_manual_removal'
 details: 'TODO'
-description: 'TODO'
+description: |
+    This Unified Log filter may be used to report on manual removals of a configuration profile by a user.  Automatic removal, such as those from an MDM server like Jamf Pro, will not be logged.
+    This filter functions by monitoring logging from the ManagedClient subsystem, mdmclient process and the MDMDaemon category and event message containing a string known to indicate a successful, manual removal of a configuration profile.
 
 id: e13595f6-f442-4e3d-b1e7-56dde2f97ab5
 level: informational
 status: experimental
 logsource:
-  product: macos
+    product: macos
 detection:
-  selection:
-    process:"TODO"
-  condition: selection
+    selection:
+        subsystem: 'com.apple.ManagedClient'
+        process: 'mdmclient'
+        category: 'MDMDaemon'
+        eventMessage|contains|all:
+            - 'Removed configuration profile:'
+            - 'Source: Manual'
+    condition: selection
 falsepositives:
-  - unknown
+    - unknown
 references:
-  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+    - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
 
 ## configuration_profile_manual_removal

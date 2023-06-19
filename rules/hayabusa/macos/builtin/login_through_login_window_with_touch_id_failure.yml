@@ -1,24 +1,27 @@
-author: 'Fukusuke Takahashi'
+author: 'TODO'
 date: 2023/06/19
 modified: 2023/06/19
 
 title: 'login_through_login_window_with_touch_id_failure'
 details: 'TODO'
-description: 'TODO'
+description: |
+    This Unified Log filter may be used to report on failed login attempts with TouchID at the macOS login window.
+    This filter functions by monitoring logging from loginwindow process where the event messaging contains a known string indicating a failed login attempt with TouchID.
 
 id: 92a3c629-498a-43cb-98e6-b238643852cf
 level: informational
 status: experimental
 logsource:
-  product: macos
+    product: macos
 detection:
-  selection:
-    process:"TODO"
-  condition: selection
+    selection:
+        process: 'loginwindow'
+        eventMessage|contains: 'APEventTouchIDNoMatch'
+    condition: selection
 falsepositives:
-  - unknown
+    - unknown
 references:
-  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+    - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
 
 ## login_through_login_window_with_touch_id_failure

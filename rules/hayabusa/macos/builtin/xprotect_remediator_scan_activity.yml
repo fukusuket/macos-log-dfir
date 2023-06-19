@@ -1,24 +1,26 @@
-author: 'Fukusuke Takahashi'
+author: 'TODO'
 date: 2023/06/19
 modified: 2023/06/19
 
 title: 'xprotect_remediator_scan_activity'
 details: 'TODO'
-description: 'TODO'
-
+description: |
+    This Unified Log filter may be used to report on XProtect Remediator scanning activity. 
+    This filter functions by monitoring logging from the subsystem, process and category known to be used for log entries from this activity.
 id: 7f8c929c-bd4a-4d22-9c19-a1e324bd2214
 level: informational
 status: experimental
 logsource:
-  product: macos
+    product: macos
 detection:
-  selection:
-    process:"TODO"
-  condition: selection
+    selection:
+        subsystem: 'com.apple.XProtectFramework.PluginAPI'
+        category: 'XPEvent.structured'
+    condition: selection
 falsepositives:
-  - unknown
+    - unknown
 references:
-  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+    - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
 ## xprotect_remediator_scan_activity
 ##

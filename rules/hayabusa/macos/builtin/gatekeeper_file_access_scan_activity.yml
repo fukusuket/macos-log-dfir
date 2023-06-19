@@ -1,24 +1,28 @@
-author: 'Fukusuke Takahashi'
+author: 'TODO'
 date: 2023/06/19
 modified: 2023/06/19
 
 title: 'gatekeeper_file_access_scan_activity'
 details: 'TODO'
-description: 'TODO'
+description: |
+    This Unified Log filter may be used to report on Gatekeeper scanning activity when a file is opened.
+    This filter functions by monitoring logging from the subsystem, process and category known to be used for log entries from this activity.
 
 id: 24997043-58cb-4ebb-9066-a4544507ab76
 level: informational
 status: experimental
 logsource:
-  product: macos
+    product: macos
 detection:
-  selection:
-    process:"TODO"
-  condition: selection
+    selection:
+        subsystem: 'com.apple.syspolicy.exec'
+        process: 'syspolicyd'
+        category: 'default'
+    condition: selection
 falsepositives:
-  - unknown
+    - unknown
 references:
-  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+    - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
 
 ## gatekeeper_file_access_scan_activity

@@ -1,4 +1,4 @@
-author: 'Fukusuke Takahashi'
+author: 'TODO'
 date: 2023/06/19
 modified: 2023/06/19
 
@@ -10,15 +10,21 @@ id: c7eabe8a-f35a-44ce-8392-43ab0e51e961
 level: informational
 status: experimental
 logsource:
-  product: macos
+    product: macos
 detection:
-  selection:
-    process:"TODO"
-  condition: selection
+    selection_1:
+        subsystem: 'com.apple.launchservices'
+        process: 'CoreServicesUIAgent'
+        category: 'uiagent'
+    selection_2:
+        eventMessage|startswith: 'Saving rejection record:'
+    selection_3:
+        eventMessage|contains: 'Gatekeeper rejection record'
+    condition: selection_1 and (selection_2 or selection_3)
 falsepositives:
-  - unknown
+    - unknown
 references:
-  - https://github.com/jamf/jamfprotect/tree/main/unified_log_filters
+    - https://github.com/builtin/jamfprotect/tree/main/unified_log_filters
 ruletype: Hayabusa
 ## gatekeeper_file_apen_rejections_and_user_bypasses
 ##
